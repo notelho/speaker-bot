@@ -1,0 +1,16 @@
+{
+  "name": "speaker-bot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Nathan Botelho",
+  "license": "GNU General Public License v3.0 ",
+  "dependencies": {
+    "discord.js": "^11.5.1",
+    "node-schedule": "^1.3.2"
+  }
+}
