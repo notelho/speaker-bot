@@ -13,6 +13,9 @@ client.on('ready', () => {
 		{ timing: { minute: 00, hour: 22, dayOfWeek: [2, 4] }, message: 'gvg' },
 		{ timing: { minute: 30, hour: [17, 23], dayOfWeek: [2, 4, 6] }, message: 'duelo das ruinas' },
 		{ timing: { minute: 30, hour: 21, dayOfWeek: [1, 3, 5, 7], }, message: 'baile da guild' },
+		{ timing: { minute: 37, hour: 21, }, message: 'teste de tempo 1' },
+		{ timing: { minute: 38, hour: 21, }, message: 'teste de tempo 2' },
+		{ timing: { minute: 39, hour: 21, }, message: 'teste de tempo 3' },
 	];
 
 	let instances = []
