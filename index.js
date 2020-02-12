@@ -1,36 +1,51 @@
 require('dotenv').config()
 
-const discord = require("discord.js")
-const client = new discord.Client()
-const Schedule = require('./source/schedule')
+const rxjs = require('rxjs')
 
-client.on('ready', () => {
+const Converter = require('./source/models/converter')
+const Schedule = require('./source/modes/schedule')
+const Reader = require('./source/models/reader')
+const Client = require('./source/models/client')
 
-	const channel = client.channels.find(channel => channel.id === process.env.CHANNEL_ID)
+const client = new Client()
+const reader = new Reader()
+const converter = new Converter()
+const schedule = new Schedule()
 
-	const schedules = [
-		{ timing: { minute: 0, hour: [12, 14, 16, 18, 20, 22, 00, 02] }, message: 'evento do reino' },
-		{ timing: { minute: 30, hour: [13, 17, 23], }, message: 'World Boss' },
-		{ timing: { minute: 00, hour: 22, dayOfWeek: [2, 4] }, message: 'gvg' },
-		{ timing: { minute: 30, hour: [17, 23], dayOfWeek: [2, 4, 6] }, message: 'duelo das ruinas' },
-		{ timing: { minute: 30, hour: 21, dayOfWeek: [1, 3, 5, 7], }, message: 'baile da guild' },
-	]
+client.connect(process.env.CHANNEL_ID)
+    .subscribe(
+        () => main(),
+        () => error())
 
-	let instances = []
+function main() {
 
-	for (let s of schedules) {
-		instances.push(new Schedule(s.timing, s.message))
-	}
+    client.login(process.env.TOKEN_BOT)
 
-	for (let i of instances) {
-		i.start(channel)
-	}
+    // const events = reader.read().src()
+    // const schedules = converter.convert(events)
 
-	let res = 'CONNECTED (ﾉ◕ヮ◕)ﾉ*:･ﾟ✧ ✧ﾟ･: *ヽ(◕ヮ◕ヽ) CONNECTED'
+    // algum merge com as messages
 
-	channel.send(res)
-	console.log(res)
+    // let instances = []
 
-})
+    // for (let s of schedules) {
+    // 	instances.push(new Schedule(s.timing, s.message))
+    // }
 
-client.login(process.env.TOKEN_BOT)
+    // for (let i of instances) {
+    // 	i.start(channel)
+    // }
+
+    // let res = 'CONNECTED (ﾉ◕ヮ◕)ﾉ*:･ﾟ✧ ✧ﾟ･: *ヽ(◕ヮ◕ヽ) CONNECTED'
+
+    // console.log(res)
+
+
+    return 0
+}
+
+function error() {
+
+    // stop pm2 app
+
+}
