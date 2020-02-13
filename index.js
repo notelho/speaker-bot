@@ -1,47 +1,49 @@
 require('dotenv').config()
 
-const rxjs = require('rxjs')
-
-const Converter = require('./source/models/converter')
-const Schedule = require('./source/modes/schedule')
+const Schedule = require('./source/models/schedule')
 const Reader = require('./source/models/reader')
-const Client = require('./source/models/client')
+// const Client = require('./source/models/client')
 
-const client = new Client()
+// const client = new Client()
 const reader = new Reader()
-const converter = new Converter()
 const schedule = new Schedule()
 
-client.connect(process.env.CHANNEL_ID)
-    .subscribe(
-        () => main(),
-        () => error())
+// client.connect(process.env.CHANNEL_ID)
+//     .subscribe(
+//         () => main(),
+//         () => error())
 
 function main() {
 
-    client.login(process.env.TOKEN_BOT)
+    // client.login(process.env.TOKEN_BOT)
 
-    // const events = reader.read().src()
-    // const schedules = converter.convert(events)
+    const events = reader.read('events.xlsx')
+
+    // console.log(events);
+    
 
     // algum merge com as messages
 
-    // let instances = []
+    // schedule.whenRun().subscribe( data => run (params)) 
 
     // for (let s of schedules) {
-    // 	instances.push(new Schedule(s.timing, s.message))
-    // }
-
-    // for (let i of instances) {
-    // 	i.start(channel)
+    // schedule.create(s.timing, s.message)
     // }
 
     // let res = 'CONNECTED (ﾉ◕ヮ◕)ﾉ*:･ﾟ✧ ✧ﾟ･: *ヽ(◕ヮ◕ヽ) CONNECTED'
 
     // console.log(res)
 
+    // client.send ( res )
+
 
     return 0
+}
+
+function run(params) {
+
+    // client.send ( message )
+
 }
 
 function error() {
@@ -49,3 +51,5 @@ function error() {
     // stop pm2 app
 
 }
+
+main() // TEMP

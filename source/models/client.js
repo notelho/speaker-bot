@@ -27,14 +27,19 @@ module.exports = class Client {
         return this._onconnect
     }
 
-    login(token) {
+    async login(token) {
         if (this._connected)
-            client.login(token)
+            return client.login(token)
+        else
+            throw new Error('Not Connected yet')
+
     }
 
     send(message) {
         if (this._connected)
-            this._channel.send(message)
+            return this._channel.send(message)
+        else
+            throw new Error('Not Connected yet')
     }
 
 }

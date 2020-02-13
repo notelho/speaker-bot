@@ -1,23 +1,37 @@
-const schedule = require('node-schedule');
+const schedule = require('node-schedule')
+const rxjs = require('rxjs')
+const Event = require('./event')
 
 module.exports = class Schedule {
 
-    constructor(timing, message) {
-        this._ref = null
-        this._timing = timing
-        this._message = message
+    constructor() {
+        this._events = []
+        this._atEvent = new rxjs.Subject()
     }
 
-    start(channel) {
+    atEvent() {
+        this._atEvent
+    }
 
-        var sh = new schedule.RecurrenceRule();
+    create(timing, message) {
 
-        for (let attr in this._timing) {
-            sh[attr] = this._timing[attr];
-        }
+        let event = new Event(timing, message)
 
-        this._ref = schedule.scheduleJob(sh,
-            () => channel.send(this._message));
+        let scheduleEvent = event.getSchedule()
+
+        schedule.scheduleJob(scheduleEvent, () => this._run(event))
+
+        this._events.push(event)
+
+    }
+
+    _run(event) {
+
+        // logs
+
+        // tratamento event pra informação
+
+        // next 
 
     }
 
