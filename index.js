@@ -2,25 +2,30 @@ require('dotenv').config()
 
 const Schedule = require('./source/models/schedule')
 const Reader = require('./source/models/reader')
-// const Client = require('./source/models/client')
+const Client = require('./source/models/client')
 
-// const client = new Client()
+const client = new Client()
 const reader = new Reader()
 const schedule = new Schedule()
 
-// client.connect(process.env.CHANNEL_ID)
-//     .subscribe(
-//         () => main(),
-//         () => error())
 
-function main() {
+function connect() {
 
-    // client.login(process.env.TOKEN_BOT)
+    client.connect(process.env.CHANNEL_ID)
 
-    const events = reader.read('events.xlsx')
+        .subscribe(() => start())
+
+    client.login(process.env.TOKEN_BOT)
+
+}
+
+function start() {
+
+    console.log('foi');
+
+    // const events = reader.read('events.xlsx')
 
     // console.log(events);
-    
 
     // algum merge com as messages
 
@@ -34,22 +39,8 @@ function main() {
 
     // console.log(res)
 
-    // client.send ( res )
-
-
-    return 0
-}
-
-function run(params) {
-
-    // client.send ( message )
+    // client.send(res)
 
 }
 
-function error() {
-
-    // stop pm2 app
-
-}
-
-main() // TEMP
+connect()
