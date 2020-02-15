@@ -6,26 +6,15 @@ module.exports = class Schedule {
 
     constructor() {
         this._events = []
-        this._atEvent = new rxjs.Subject()
+        this._gap = { time: 5, unity: 'minutes' }
+        this._onEvent = new rxjs.Subject()
     }
 
-    atEvent() {
-        this._atEvent
-    }
+    create(timing, name) {
 
-    create(timing, message) {
-
-        let event = new Event(timing, message)
+        let event = new Event(timing, name)
 
         let scheduleEvent = event.getSchedule()
-
-        schedule.scheduleJob(scheduleEvent, () => this._run(event))
-
-        this._events.push(event)
-
-    }
-
-    _run(event) {
 
         // logs
 
@@ -33,6 +22,19 @@ module.exports = class Schedule {
 
         // next 
 
+
+        schedule.scheduleJob(scheduleEvent, () => this._run(event))
+
+        this._events.push(event)
+
+    }
+
+    get gap() {
+        return this._gap
+    }
+
+    get event() {
+        return this._onEvent
     }
 
 }

@@ -1,13 +1,12 @@
 require('dotenv').config()
 
+const events = require('./source/resources/events')
+
 const Schedule = require('./source/models/schedule')
-const Reader = require('./source/models/reader')
 const Client = require('./source/models/client')
 
 const client = new Client()
-const reader = new Reader()
 const schedule = new Schedule()
-
 
 function connect() {
 
@@ -21,25 +20,32 @@ function connect() {
 
 function start() {
 
-    console.log('foi');
+    schedule.event.subscribe(event => run(event))
 
-    // const events = reader.read('events.xlsx')
+    for (let event of events)
+        schedule.create(event.timing, event.name)
 
-    // console.log(events);
+    const about = [
+        '```',
+        'This bot was created by lsabela & ×AZ× Xuliana',
+        'and will alert about game events sending messages at time',
+        `and ${schedule.gap.time} ${schedule.gap.unity} before of registered events.`,
+        'To change the time or add events, speak to one of the managers.',
+        '(ﾉ◕ヮ◕)ﾉ*:･ﾟ✧ ✧ﾟ･: *ヽ(◕ヮ◕ヽ)',
+        '```',
+    ]
 
-    // algum merge com as messages
+    // let res = about.join('\n')
 
-    // schedule.whenRun().subscribe( data => run (params)) 
+    let res = about[5]
+    console.log(res)
+    client.send(res)
 
-    // for (let s of schedules) {
-    // schedule.create(s.timing, s.message)
-    // }
+}
 
-    // let res = 'CONNECTED (ﾉ◕ヮ◕)ﾉ*:･ﾟ✧ ✧ﾟ･: *ヽ(◕ヮ◕ヽ) CONNECTED'
+function run(event) {
 
-    // console.log(res)
-
-    // client.send(res)
+    console.log(event);
 
 }
 

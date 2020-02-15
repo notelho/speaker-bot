@@ -2,9 +2,9 @@ const schedule = require('node-schedule')
 
 module.exports = class Event {
 
-    constructor(timing, message) {
+    constructor(timing, name) {
         this._timing = timing
-        this._message = message
+        this._name = name
     }
 
     getSchedule() {
@@ -15,18 +15,15 @@ module.exports = class Event {
             scheduleEvent[attr] = this._timing[attr]
 
         return scheduleEvent
-    }
-
-    getDate() {
 
     }
 
-    getMessage() {
-
+    get timing() {
+        return this._timing
     }
 
-    getData() {
-
+    get name() {
+        return this._name
     }
 
 }
