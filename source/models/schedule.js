@@ -1,82 +1,46 @@
 const schedule = require('node-schedule')
 const rxjs = require('rxjs')
-const Event = require('./event')
+const EventNow = require('./event-now')
+const EventSoon = require('./event-soon')
+const ScheduleCreator = require('./schedule-creator')
+const ScheduleDestroyer = require('./schedule-destroyer')
 
 module.exports = class Schedule {
 
     constructor() {
 
         this._events = []
-        this._gap = { time: 5, unity: 'minutes' }
+
         this._onEvent = new rxjs.Subject()
         this._onReboot = new rxjs.Subject()
 
-        let rebootRule = new schedule.RecurrenceRule()
+        this._scheduleCreator = new ScheduleCreator()
+        this._scheduleDestroyer = new ScheduleDestroyer()
+        this._scheduleFilter = new ScheduleFilter()
 
-        rebootRule['minute'] = 56
-        rebootRule['hour'] = 21
-
-        schedule.scheduleJob('reboot', rebootRule, () => this._onReboot.next())
-
+        this._rebooter()
     }
 
-    create(timing, name, self = this) {
-
-        const events = [
-            new Event(timing, name, 'now'),
-            // new Event(timing, name, 'soon')
-        ]
-
-        for (let i = 0; i < events.length; i++) {
-
-            const key = `job-${this._events.length}${i}`
-
-            const jobSchedule = events[i].getSchedule()
-
-            const callback = () => self.event.next(events[i])
-
-            schedule.scheduleJob(key, jobSchedule, callback)
-
-        }
-
-        this._events.push(events)
-
+    create() {
+        const events = this._scheduleFilter.run()
+        const schedules = this._scheduleCreator.run(events, this._onEvent)
+        this.events.push(schedules)
     }
 
     destroy() {
+        this._scheduleDestroyer.run(this._events)
+        this._events = []
+    }
 
-        // console.log('destroy')
-
-        // for (let i = 0; i < this._events.length; i++) {
-
-        //     for (let j = 0; i < this._events[i].length; j++) {
-
-        //         console.log(schedule.scheduledJobs[`job-${i}${j}`])
-
-        //         schedule.scheduledJobs[`job-${i}${j}`].cancel()
-
-        //         console.log(schedule.scheduledJobs[`job-${i}${j}`])
-
-        //     }
-
-        // }
-
-        // this._events = []
-
+    _rebooter() {
+        let rule = new schedule.RecurrenceRule()
+        rule['minute'] = process.env.REBOOT_MINUTE
+        rule['hour'] = process.env.REBOOT_HOUR
+        schedule.scheduleJob('reboot', rebootRule, () => this.reboot.next())
     }
 
     get reboot() {
-
-        console.log('alguem se increveu em');
-
-        console.log(this._onReboot);
-
-
         return this._onReboot
-    }
-
-    get gap() {
-        return this._gap
     }
 
     get event() {

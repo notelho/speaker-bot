@@ -1,7 +1,5 @@
 require('dotenv').config()
 
-const events = require('./source/resources/events')
-
 const Schedule = require('./source/models/schedule')
 const Client = require('./source/models/client')
 
@@ -26,17 +24,9 @@ function connect() {
 function start() {
 
     eventSubscription = schedule.event.subscribe(event => send(event))
+    rebootSubscription = schedule.reboot.subscribe(event => reboot(event))
 
-    rebootSubscription = schedule.reboot.subscribe(event => {
-
-        console.log('a inscrição funciono pelomenos');
-
-
-        reboot(event)
-    })
-
-    for (let event of events)
-        schedule.create(event.timing, event.name)
+    schedule.create()
 
     about()
 
@@ -44,7 +34,7 @@ function start() {
 
 function error() {
 
-    console.log('something goes wrong');
+    console.log('error');
 
 }
 
@@ -62,7 +52,7 @@ function about() {
         '```',
         'This bot was created by lsabela & ×AZ× Xuliana',
         'and will alert about game events sending messages at time',
-        `and ${schedule.gap.time} ${schedule.gap.unity} before of registered events.`,
+        `and ${process.env.GAP_TIME} ${process.env.GAP_UNITY} before of registered events.`,
         'To change the time or add events, speak to one of the managers.',
         '(ﾉ◕ヮ◕)ﾉ*:･ﾟ✧ ✧ﾟ･: *ヽ(◕ヮ◕ヽ)',
         '```',
@@ -77,10 +67,6 @@ function about() {
 }
 
 function reboot() {
-
-    console.log('reboot')
-
-    client.send('reboot')
 
     schedule.destroy()
 
