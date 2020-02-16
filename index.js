@@ -8,11 +8,16 @@ const Client = require('./source/models/client')
 const client = new Client()
 const schedule = new Schedule()
 
+var eventSubscription
+var rebootSubscription
+
 function connect() {
 
     client.connect(process.env.CHANNEL_ID)
 
-        .subscribe(() => start())
+        .subscribe(
+            () => start(),
+            () => error())
 
     client.login(process.env.TOKEN_BOT)
 
@@ -20,10 +25,38 @@ function connect() {
 
 function start() {
 
-    schedule.event.subscribe(event => run(event))
+    eventSubscription = schedule.event.subscribe(event => send(event))
+
+    rebootSubscription = schedule.reboot.subscribe(event => {
+
+        console.log('a inscrição funciono pelomenos');
+
+
+        reboot(event)
+    })
 
     for (let event of events)
         schedule.create(event.timing, event.name)
+
+    about()
+
+}
+
+function error() {
+
+    console.log('something goes wrong');
+
+}
+
+function send(event) {
+
+    console.log(event.message)
+    client.send('event')
+    client.send(event.message)
+
+}
+
+function about() {
 
     const about = [
         '```',
@@ -43,9 +76,21 @@ function start() {
 
 }
 
-function run(event) {
+function reboot() {
 
-    console.log(event);
+    console.log('reboot')
+
+    client.send('reboot')
+
+    schedule.destroy()
+
+    eventSubscription.unsubscribe()
+    rebootSubscription.unsubscribe()
+
+    eventSubscription = null
+    rebootSubscription = null
+
+    start()
 
 }
 

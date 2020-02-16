@@ -5,28 +5,74 @@ const Event = require('./event')
 module.exports = class Schedule {
 
     constructor() {
+
         this._events = []
         this._gap = { time: 5, unity: 'minutes' }
         this._onEvent = new rxjs.Subject()
+        this._onReboot = new rxjs.Subject()
+
+        let rebootRule = new schedule.RecurrenceRule()
+
+        rebootRule['minute'] = 56
+        rebootRule['hour'] = 21
+
+        schedule.scheduleJob('reboot', rebootRule, () => this._onReboot.next())
+
     }
 
-    create(timing, name) {
+    create(timing, name, self = this) {
 
-        let event = new Event(timing, name)
+        const events = [
+            new Event(timing, name, 'now'),
+            // new Event(timing, name, 'soon')
+        ]
 
-        let scheduleEvent = event.getSchedule()
+        for (let i = 0; i < events.length; i++) {
 
-        // logs
+            const key = `job-${this._events.length}${i}`
 
-        // tratamento event pra informação
+            const jobSchedule = events[i].getSchedule()
 
-        // next 
+            const callback = () => self.event.next(events[i])
+
+            schedule.scheduleJob(key, jobSchedule, callback)
+
+        }
+
+        this._events.push(events)
+
+    }
+
+    destroy() {
+
+        // console.log('destroy')
+
+        // for (let i = 0; i < this._events.length; i++) {
+
+        //     for (let j = 0; i < this._events[i].length; j++) {
+
+        //         console.log(schedule.scheduledJobs[`job-${i}${j}`])
+
+        //         schedule.scheduledJobs[`job-${i}${j}`].cancel()
+
+        //         console.log(schedule.scheduledJobs[`job-${i}${j}`])
+
+        //     }
+
+        // }
+
+        // this._events = []
+
+    }
+
+    get reboot() {
+
+        console.log('alguem se increveu em');
+
+        console.log(this._onReboot);
 
 
-        schedule.scheduleJob(scheduleEvent, () => this._run(event))
-
-        this._events.push(event)
-
+        return this._onReboot
     }
 
     get gap() {

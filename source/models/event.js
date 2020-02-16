@@ -2,9 +2,14 @@ const schedule = require('node-schedule')
 
 module.exports = class Event {
 
-    constructor(timing, name) {
+    constructor(timing, name, type) {
         this._timing = timing
         this._name = name
+        this._type = type
+        this._messages = {
+            "now": `${this._name} already started! Go now!!!`,
+            'soon': `${this._name} will start in 5 minutes! Get ready!`
+        }
     }
 
     getSchedule() {
@@ -16,6 +21,10 @@ module.exports = class Event {
 
         return scheduleEvent
 
+    }
+
+    get message() {
+        return this._messages[this._type]
     }
 
     get timing() {
