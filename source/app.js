@@ -1,97 +1,60 @@
-module.exports = class App {
+const Schedule = require('./models/schedule')
+const Client = require('./models/client')
+
+class App {
 
     constructor() {
+        this._client = new Client()
+        this._schedule = new Schedule()
+    }
+
+    connect() {
+
+        this._client.connect(process.env.CHANNEL_ID)
+            .subscribe(
+                () => this.begin(),
+                () => this.error())
+
+        this._client.login(process.env.TOKEN_BOT)
+            .catch(() => error())
 
     }
 
+    start() {
+        this._schedule.event.subscribe(event => this.send(event))
+        this._schedule.create()
+    }
 
+    error() {
+        console.log('error');
+    }
 
+    send(event) {
+        console.log(event.message)
+        this._client.send('```' + event.message + '```')
+    }
+
+    begin() {
+
+        console.log('starting...')
+
+        let res = [
+
+            '```',
+            // 'This bot was created by lsabela & ×AZ× Xuliana',
+            // 'and will alert about game events sending messages at time',
+            // `and 5 minutes before of registered events.`,
+            // 'To change the time or add events, speak to one of the managers.',
+            '(ﾉ◕ヮ◕)ﾉ*:･ﾟ✧ ✧ﾟ･: *ヽ(◕ヮ◕ヽ)',
+            '```',
+
+        ].join('\n')
+
+        this._client.send(res)
+
+        this.start()
+    }
 
 }
 
-// require('dotenv').config()
-
-// const events = require('./source/resources/events')
-
-// const Schedule = require('./source/models/schedule')
-// const Client = require('./source/models/client')
-
-// const client = new Client()
-// const schedule = new Schedule()
-
-// var eventSubscription
-// var rebootSubscription
-
-// function connect() {
-
-//     client.connect(process.env.CHANNEL_ID)
-
-//         .subscribe(
-//             () => start(),
-//             () => error())
-
-//     client.login(process.env.TOKEN_BOT)
-
-// }
-
-// function start() {
-
-//     eventSubscription = schedule.event.subscribe(event => send(event))
-//     rebootSubscription = schedule.reboot.subscribe(event => reboot(event))
-
-//     for (let event of events)
-//         schedule.create(event.timing, event.name)
-
-//     about()
-
-// }
-
-// function error() {
-
-//     console.log('error');
-
-// }
-
-// function send(event) {
-
-//     console.log(event.message)
-//     client.send('event')
-//     client.send(event.message)
-
-// }
-
-// function about() {
-
-//     const about = [
-//         '```',
-//         'This bot was created by lsabela & ×AZ× Xuliana',
-//         'and will alert about game events sending messages at time',
-//         `and ${process.env.GAP_TIME} ${process.env.GAP_UNITY} before of registered events.`,
-//         'To change the time or add events, speak to one of the managers.',
-//         '(ﾉ◕ヮ◕)ﾉ*:･ﾟ✧ ✧ﾟ･: *ヽ(◕ヮ◕ヽ)',
-//         '```',
-//     ]
-
-//     // let res = about.join('\n')
-
-//     let res = about[5]
-//     console.log(res)
-//     client.send(res)
-
-// }
-
-// function reboot() {
-
-//     schedule.destroy()
-
-//     eventSubscription.unsubscribe()
-//     rebootSubscription.unsubscribe()
-
-//     eventSubscription = null
-//     rebootSubscription = null
-
-//     start()
-
-// }
-
-// connect()
+module.exports = new App()
