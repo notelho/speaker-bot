@@ -4,11 +4,10 @@ module.exports = class ScheduleDestroyer {
 
     constructor() { }
 
-    run(events) {
+    run(keys) {
 
-        for (let i = 0; i < events.length; i++)
-            for (let j = 0; j < events[i].length; j++)
-                schedule.scheduledJobs[`job-${i}${j}`].cancel()
+        for (let key of keys)
+            schedule.scheduledJobs[key].cancel()
 
     }
 

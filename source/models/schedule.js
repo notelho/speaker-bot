@@ -1,50 +1,47 @@
-const schedule = require('node-schedule')
 const rxjs = require('rxjs')
-const EventNow = require('./event-now')
-const EventSoon = require('./event-soon')
+const schedule = require('node-schedule')
+const ScheduleReader = require('./schedule-reader')
 const ScheduleCreator = require('./schedule-creator')
 const ScheduleDestroyer = require('./schedule-destroyer')
 
 module.exports = class Schedule {
 
     constructor() {
-
-        this._events = []
-
-        this._onEvent = new rxjs.Subject()
-        this._onReboot = new rxjs.Subject()
-
+        this._keys = []
+        this._emitter = new rxjs.Subject()
+        this._scheduleReader = new ScheduleReader()
         this._scheduleCreator = new ScheduleCreator()
         this._scheduleDestroyer = new ScheduleDestroyer()
-        this._scheduleFilter = new ScheduleFilter()
 
-        this._rebooter()
+        let
+            rule = new schedule.RecurrenceRule(),
+            minute = parseInt(process.env.REBOOT_MINUTE),
+            hour = parseInt(process.env.REBOOT_HOUR)
+
+        rule['minute'] = minute
+        rule['hour'] = hour
+
+        schedule.scheduleJob('reboot', rule, () => this.reboot())
     }
 
     create() {
-        const events = this._scheduleFilter.run()
-        const schedules = this._scheduleCreator.run(events, this._onEvent)
-        this.events.push(schedules)
+        const events = this._scheduleReader.run()
+        const keys = this._scheduleCreator.run(events, this)
+        this._keys = keys
     }
 
-    destroy() {
-        this._scheduleDestroyer.run(this._events)
-        this._events = []
+    reboot() {
+        this._scheduleDestroyer.run(this._keys)
+        this._keys = []
+        this.create()
     }
 
-    _rebooter() {
-        let rule = new schedule.RecurrenceRule()
-        rule['minute'] = process.env.REBOOT_MINUTE
-        rule['hour'] = process.env.REBOOT_HOUR
-        schedule.scheduleJob('reboot', rebootRule, () => this.reboot.next())
-    }
-
-    get reboot() {
-        return this._onReboot
+    next(params) {
+        this._emitter.next(params)
     }
 
     get event() {
-        return this._onEvent
+        return this._emitter
     }
 
 }

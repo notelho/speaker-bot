@@ -6,9 +6,6 @@ const Client = require('./source/models/client')
 const client = new Client()
 const schedule = new Schedule()
 
-var eventSubscription
-var rebootSubscription
-
 function connect() {
 
     client.connect(process.env.CHANNEL_ID)
@@ -24,7 +21,6 @@ function connect() {
 function start() {
 
     eventSubscription = schedule.event.subscribe(event => send(event))
-    rebootSubscription = schedule.reboot.subscribe(event => reboot(event))
 
     schedule.create()
 
@@ -52,7 +48,7 @@ function about() {
         '```',
         'This bot was created by lsabela & ×AZ× Xuliana',
         'and will alert about game events sending messages at time',
-        `and ${process.env.GAP_TIME} ${process.env.GAP_UNITY} before of registered events.`,
+        `and 5 minutes before of registered events.`,
         'To change the time or add events, speak to one of the managers.',
         '(ﾉ◕ヮ◕)ﾉ*:･ﾟ✧ ✧ﾟ･: *ヽ(◕ヮ◕ヽ)',
         '```',
@@ -66,18 +62,5 @@ function about() {
 
 }
 
-function reboot() {
-
-    schedule.destroy()
-
-    eventSubscription.unsubscribe()
-    rebootSubscription.unsubscribe()
-
-    eventSubscription = null
-    rebootSubscription = null
-
-    start()
-
-}
 
 connect()
