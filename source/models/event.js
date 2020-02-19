@@ -20,7 +20,7 @@ module.exports = class Event {
         let minute = this._time.minute
         let date = new Date()
 
-        date.setHours(hour, minute, 0, 0)
+        date.setHours(hour + 3, minute, 0, 0)
 
         if (this._gap !== 0)
             return new Date(date.getTime() - (1000 * 60 * (this._gap * -1)))

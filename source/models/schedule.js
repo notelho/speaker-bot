@@ -31,6 +31,7 @@ module.exports = class Schedule {
     }
 
     reboot() {
+        console.log('reboot now: ' + new Date().getTime());
         this._scheduleDestroyer.run(this._keys)
         this._keys = []
         this.create()
